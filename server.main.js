@@ -2,14 +2,16 @@ const express = require("express");
 const app = express();
 const env = require("dotenv").config();
 const path = require("path");
-
-
+const cors = require("cors")
 var bodyParser = require("body-parser");
-
-
 var db = require("./database")
-var auth = require("./jwt")
+var auth = require("./jwt");
+const { webcrypto } = require("crypto");
+var corsOptions = {
+  origin: "http://localhost:5173"
+};
 
+app.use(cors(corsOptions));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -46,6 +48,7 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 app.post("/login/auth", (req, res) => {
+  console.log(req.body)
   /* dba means database action!! */
   let dba = db.attemptLogin(req.body);
   dba.then(result => {
@@ -142,5 +145,5 @@ app.post("/register/new-user", (req, res) => {
   }
 ); */
 
-
+db.close();
 app.listen(process.env.PORT || 3001);
